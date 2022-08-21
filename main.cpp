@@ -12,19 +12,24 @@
 #include "util.h"
 
 
+// [x, y, z, r, g, b]
 const float vertecies[] = {
-    -0.5f, -0.5f, 0.0f,
-     0.5f, -0.5f, 0.0f,
-     0.0f, 0.5f, 0.0f,
+    -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
+     0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
+     0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
 };
 
 const char* vertexSource = R"glsl(
 #version 330 core
 
 layout (location = 0) in vec3 aPos;
+layout(location = 1) in vec3 color;
+
+out vec3 Color;
 
 void main()
 {
+    Color = color;
     gl_Position = vec4(aPos, 1.0);
 }
 )glsl";
@@ -34,9 +39,11 @@ const char* fragmentSource =  R"glsl(
 
 out vec4 FragColor;
 
+in vec3 Color;
+
 void main()
 {
-    FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);
+    FragColor = vec4(Color, 1.0f);
 }
 )glsl";
 
@@ -54,8 +61,10 @@ int main(int argc, char** argv)
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertecies), vertecies, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
 
     GLuint shaderProgram = getShaderProgram(vertexSource, fragmentSource);
     glUseProgram(shaderProgram);
