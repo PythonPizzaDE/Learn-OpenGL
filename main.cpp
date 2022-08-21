@@ -10,6 +10,7 @@
 
 // utilities for creating windows etc.
 #include "util.h"
+#include "shader_s.hpp"
 
 struct vertex {
     float x;
@@ -21,38 +22,26 @@ struct vertex {
 };
 
 const vertex vertecies[] = {
-    vertex {-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f },
-    vertex { 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f },
-    vertex { 0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f },
+    vertex { -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f },
+    vertex {  0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f },
+    vertex {  0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f },
 };
 
-const char* vertexSource = R"glsl(
-#version 330 core
+// const vertex vertecies[] = {
+//     vertex { 0.75f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f },
+//     vertex { 0.25f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f },
+//     vertex { 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f },
 
-layout (location = 0) in vec3 aPos;
-layout(location = 1) in vec3 color;
+//     vertex { -0.75f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f },
+//     vertex { -0.25f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f },
+//     vertex { -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f },
+    
+// };
 
-out vec3 Color;
-
-void main()
-{
-    Color = color;
-    gl_Position = vec4(aPos, 1.0);
-}
-)glsl";
-
-const char* fragmentSource =  R"glsl(
-#version 330 core
-
-out vec4 FragColor;
-
-in vec3 Color;
-
-void main()
-{
-    FragColor = vec4(Color, 1.0f);
-}
-)glsl";
+const unsigned int indices[] = {
+    0, 1, 3,
+    1, 2, 3,
+};
 
 int main(int argc, char** argv)
 {
@@ -68,17 +57,25 @@ int main(int argc, char** argv)
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertecies), vertecies, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    unsigned int EBO;
+    glGenBuffers(1, &EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
 
-    GLuint shaderProgram = getShaderProgram(vertexSource, fragmentSource);
-    glUseProgram(shaderProgram);
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+    Shader shader ("./vertex.glsl", "./fragment.glsl");
+    shader.use();
 
     while (!glfwWindowShouldClose(window))
     {
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
         glfwSwapBuffers(window);
         glfwPollEvents();
 
