@@ -11,12 +11,19 @@
 // utilities for creating windows etc.
 #include "util.h"
 
+struct vertex {
+    float x;
+    float y;
+    float z;
+    float red;
+    float green;
+    float blue;
+};
 
-// [x, y, z, r, g, b]
-const float vertecies[] = {
-    -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-     0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
-     0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
+const vertex vertecies[] = {
+    vertex {-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f },
+    vertex { 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f },
+    vertex { 0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f },
 };
 
 const char* vertexSource = R"glsl(
