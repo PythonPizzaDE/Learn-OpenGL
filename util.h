@@ -4,5 +4,5 @@
 
 // reduce boilerplate in main file
 GLFWwindow* setup();
-GLuint getShaderProgram(char* vertexShaderSource, char* fragmentShaderSource);
+GLuint getShaderProgram(const char* vertexShaderSource, const char* fragmentShaderSource);
 void terminate();
