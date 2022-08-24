@@ -21,13 +21,13 @@ struct vertex {
     float blue;
 };
 
-const vertex vertecies[] = {
+const vertex vertices[] = {
     vertex { -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f },
     vertex {  0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f },
     vertex {  0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f },
 };
 
-// const vertex vertecies[] = {
+// const vertex vertices[] = {
 //     vertex { 0.75f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f },
 //     vertex { 0.25f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f },
 //     vertex { 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f },
@@ -55,7 +55,7 @@ int main(int argc, char** argv)
     unsigned int VBO;
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertecies), vertecies, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     unsigned int EBO;
     glGenBuffers(1, &EBO);
