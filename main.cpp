@@ -46,7 +46,7 @@ const vertex vertices[] = {
 
 const unsigned int indices[] = {
     0, 1, 3,
-    3, 2, 3,
+    3, 2, 0,
 };
 
 int main(int argc, char** argv)
@@ -68,8 +68,9 @@ int main(int argc, char** argv)
     glGenTextures(1, &texture2);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, texture2);
+    stbi_set_flip_vertically_on_load(true);
     unsigned char *data2 = stbi_load("awesomeface.png", &width, &height, &nrChannels, 0);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data2);
     glGenerateMipmap(GL_TEXTURE_2D);
 
     unsigned int VAO;
@@ -112,5 +113,6 @@ int main(int argc, char** argv)
     }
 
     stbi_image_free(data);
+    stbi_image_free(data2);
     terminate();
 }
