@@ -15,6 +15,11 @@
 // image loading
 #include "stb_image.h"
 
+// math
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 struct vertex {
     float x;
     float y;
