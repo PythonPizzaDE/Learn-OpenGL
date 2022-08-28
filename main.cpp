@@ -110,11 +110,67 @@ const unsigned int indices[] = {
     3, 2, 0,
 };
 
+float pitch = 0, yaw = -90;
+
+glm::vec3 pitchYawToVector(float pitch, float yaw)
+{
+    glm::vec3 direction;
+    direction.x = std::cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    direction.y = -std::sin(glm::radians(pitch));
+    direction.z = std::sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+
+    return direction;
+}
+
+glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 cameraFront = pitchYawToVector(pitch, yaw);
+glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f, 0.0f);
+
+
+void processInput(GLFWwindow* window, float delta)
+{
+    float cameraSpeed = 5.0f * delta;
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, GL_TRUE);
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        cameraPos += cameraSpeed * cameraFront;
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        cameraPos -= cameraSpeed * cameraFront;
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        cameraPos -= cameraSpeed * glm::normalize(glm::cross(cameraFront, cameraUp));
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        cameraPos += cameraSpeed * glm::normalize(glm::cross(cameraFront, cameraUp));
+}
+
+
+float lastX = 1920 / 2, lastY = 1080 / 2;
+const float mouse_sensitivity = 0.01f;
+
+void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+{
+    float xoffset = xpos - lastX;
+    float yoffset = ypos - lastY;
+
+    lastX = xpos;
+    lastY = ypos;
+
+    yaw += xoffset * mouse_sensitivity;
+    pitch += yoffset * mouse_sensitivity;
+
+    if (pitch > 89.0f)
+        pitch = 89.0f;
+    if (pitch < -89.0f)
+        pitch = -89.0f;
+
+    cameraFront = pitchYawToVector(pitch, yaw);
+}
+
 int main(int argc, char** argv)
 {
 
     GLFWwindow* window = setup();
 
+    glfwSetCursorPosCallback(window, mouse_callback);
 
     int width, height, nrChannels;
     unsigned char *data = stbi_load("container.jpg", &width, &height, &nrChannels, 0);
@@ -169,14 +225,21 @@ int main(int argc, char** argv)
 
     float fov = 45.0f;
 
+    glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+
+    float currentFrame = glfwGetTime();
+    float lastFrame = 0.0f;
+
     while (!glfwWindowShouldClose(window))
     {
+        currentFrame = glfwGetTime();
+        float deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
 
         /* glm::mat4 model = glm::mat4(1.0f); */
         /* model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f)); */
 
-        glm::mat4 view = glm::mat4(1.0f);
-        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+        glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
         glm::mat4 projection;
         projection = glm::perspective(glm::radians(fov), 1920.0f / 1080.0f, 0.1f, 100.0f);
@@ -210,14 +273,7 @@ int main(int argc, char** argv)
         glfwSwapBuffers(window);
         glfwPollEvents();
 
-        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-            glfwSetWindowShouldClose(window, GL_TRUE);
-
-        if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS && fov > 20.0f)
-            fov--;
-
-        if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS && fov < 200.0f)
-            fov++;
+        processInput(window, deltaTime);
     }
 
     stbi_image_free(data);
