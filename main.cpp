@@ -1,5 +1,3 @@
-#include <fstream>
-#include <glm/trigonometric.hpp>
 #include <iostream>
 //
 // use (modern) OpenGL
@@ -20,6 +18,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/trigonometric.hpp>
 #include <math.h>
 
 struct vertex {
